@@ -1,0 +1,28 @@
+{
+  "name": "fitbit",
+  "version": "1.0.0",
+  "description": "Node.js app to load fitbit data into a db (AWS DynamoDB)",
+  "main": "loadFitData2DynDB.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ggwiebe/fitbit.git"
+  },
+  "keywords": [
+    "fitbit",
+    "DynamoDB"
+  ],
+  "author": "Glenn Wiebe",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ggwiebe/fitbit/issues"
+  },
+  "homepage": "https://github.com/ggwiebe/fitbit#readme",
+  "dependencies": {
+    "dynamodb-data-types": "^3.0.1",
+    "fs-extra": "^7.0.0",
+    "jsonfile": "^5.0.0"
+  }
+}
