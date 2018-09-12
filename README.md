@@ -15,7 +15,7 @@ Use DynamoDB and AWS utilities to transform Fitbit HR data to Dynamo Load format
 
 ### Pre-requisites - Node HTTP Request Setup
 i.  Use NPM to get and install the REQUEST package
-ii. 
+ii.
 
 ### Fitbit Authorization
 We will be using the code grant authorization profile, so there needs to be an application to which Fitbit will grant authorization.
@@ -27,3 +27,50 @@ We will be using the code grant authorization profile, so there needs to be an a
 2. Perform the DynamoDB load by looping through DynamoDB Compliant HeartRate array
 ...
 
+## Modeling Decisions
+
+####Fitbit's HeartRate object
+API has two key elements:
+1. a Dated summary section about hear activities:
+```javascript
+  {
+    "activities-heart": [
+        {
+            "dateTime": "2018-09-01",
+            "value": {
+                "customHeartRateZones": [],
+                "heartRateZones": [... ]
+                "restingHeartRate": 67
+            }
+        }
+    ],
+```
+2. an intraday Timeseries of heart readings:
+```javascript
+    "activities-heart-intraday": {
+        "dataset": [
+            {
+                "time": "00:08:00",
+                "value": 70
+            },
+            ...
+        ],
+        "datasetInterval": 1,
+        "datasetType": "minute"
+    }
+}
+```
+
+#### Modeling Decision
+The above Fitbit object has a large list of heartrate readings isolated by a context-free time and heartrate value PLUS the metadata segment with the date context and summary values.
+Thoughts:
+1. Create a metadata segment and either:
+  - populate directly from Fitbit response, or
+  - initialize and allow for intraday updates as data is received
+2. De-normalize the date into the time to get a full timestamp for each reading.
+
+
+## Development & Debugging
+Running from ~/apps/Fitbit
+Debug node components using --inspect-brk start parameter and Chrome DevTools for step debugging
+e.g. \fitbit> node --inspect-brk createDynamoHRFile.js
