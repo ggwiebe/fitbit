@@ -1,0 +1,6 @@
+{
+   "PersonID": { "S": "ggwiebe" },
+   "Date": { "S": "20180901" },
+   "Time": { "S": "24:00:00" },
+   "HeartRate": {"N": 1356}
+}

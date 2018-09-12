@@ -1,0 +1,8 @@
+{
+    "PersonID": { "S": "ggwiebe" },
+    "Date": { "S": "20160101" },
+    "Time": { "S": "12:34:56" },
+    "CreateDate": {"S": "20160101" },
+    "FirstName": {"S": "Glenn" },
+    "LastName": {"S": "Wiebe"}
+}

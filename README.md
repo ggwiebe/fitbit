@@ -30,6 +30,7 @@ We will be using the code grant authorization profile, so there needs to be an a
 ## Modeling Decisions
 
 ####Fitbit's HeartRate object
+
 API has two key elements:
 1. a Dated summary section about hear activities:
 ```javascript
@@ -68,7 +69,48 @@ Thoughts:
   - populate directly from Fitbit response, or
   - initialize and allow for intraday updates as data is received
 2. De-normalize the date into the time to get a full timestamp for each reading.
+3. Assume the model is built to support many people, and the access path will start with getting the person, and then selecting the range of information;
 
+Therefore:
+4. Set Partition key to be person <== Not enough data on person to worry about scattering
+5. Set Sort key to date and use ISO 8601 format, preferring: 20180912T112334 (local time)
+6. FUTURE: set TTL against the individual readings, but leave that for !
+7. FUTURE: Overload table to support HeartRate and Other activities (e.g. steps, weight, etc.)
+8. FUTURE: If a longitudinal statistical study was to be needed, we could create a GSI by HeartRate and Date (avoiding Person)  
+
+#### DynamoDB design
+| Person  | Date     | Time     | Attribute1            | Attribute2           | Attribute3           |
+| ------- | -------- | -------- | --------------------- | -------------------- | -------------------- |
+| ggwiebe | 20160101 | 12:34:56 | CreateDate = 20160101 | FirstName = Glenn    | LastName = Wiebe     |
+| ggwiebe | 20180901 | 00:08:00 | HeartRate = 65        |
+| ggwiebe | 20180901 | 00:09:00 | HeartRate = 66        |
+| ggwiebe | 20180901 | 24:00:00 | HeartRate.DayAvg = 70 | HeartRate.DayCnt = 1356 |
+
+Or:
+```JSON
+{
+    "PersonID": { "S": "ggwiebe" },
+    "Date": { "S": "20160101" },
+    "Time": { "S": "12:34:56" },
+    "CreateDate": {"S": "20160101" },
+    "FirstName": {"S": "Glenn" },
+    "LastName": {"S": "Wiebe"}
+}
+{
+    "PersonID": { "S": "ggwiebe" },
+    "Date": { "S": "20180901" },
+    "Time": { "S": "00:08:00" },
+    "HeartRate": {"N": 65}
+}
+{
+    "PersonID": { "S": "ggwiebe" },
+    "Date": { "S": "20180901" },
+    "Time": { "S": "24:00:00" },
+    "HeartRate.DayAvg": {"N": 70},
+    "HeartRate.DayCnt": {"N": 1356}
+}
+
+```
 
 ## Development & Debugging
 Running from ~/apps/Fitbit
